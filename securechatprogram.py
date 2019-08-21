@@ -23,7 +23,6 @@ def generate_new_key():
     print("***PLEASE WAIT***\n***key is in the file:key_file***")
     salt=os.urandom(16)
     kdf=PBKDF2HMAC(algorithm=hashes.SHA256(),salt=salt,iterations=1000000,backend=default_backend(),length=32)
-    print("her")
     key=base64.urlsafe_b64encode(kdf.derive(password))
     fd=open("key_file","wb")
     fd.write(key)
