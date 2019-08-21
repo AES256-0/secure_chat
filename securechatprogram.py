@@ -31,7 +31,7 @@ def generate_new_key():
 
 
 def encrypt_data(key):
-    data=input("Enter the data:").encode()
+    data=input(" "*70 + "Enter the data:").encode()
     f=Fernet(key)
     encrypted_data=f.encrypt(data)
     return encrypted_data
@@ -41,33 +41,38 @@ def decrypt_data(key,data):
     decrypted_data=d.decrypt(data)
     return decrypted_data
 
+def send_data(sock,key):
+    data=encrypt_data(key)
+    sock.send(data)
+ 
+def recv_data(sock,key):
+     data=sock.recv(1024)
+     data=decrypt_data(key,data)
+     print("\nRecv:"+str(data))
+
 
 def client_function(ip,port):
     sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
     try:
         sock.connect((ip,port))
     except:
         print("***Error,Cant connect to the device***")
-        sys.exit(1)
+        sys.exit(1)    
     fd=open("key_file","rb")
     key=fd.read()
     while True:
-        data=encrypt_data(key)
-        if not data:break
-        sock.send(data)
-        #data=""
-        #while True:
-        data=sock.recv(1024)
-        #      if not data:break
-        #      data=data+new
-        if not data:break
-        data=decrypt_data(key,data)
-        print(data)
+        ret=os.fork()
+        if ret==0:
+            send_data(sock,key)
+        else:
+            recv_data(sock,key)
     sock.close()   
 
 
 def server_function():
     sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
     sock.bind(("127.0.0.1",8090))
     print("***listening***")
     sock.listen(5)
@@ -77,13 +82,11 @@ def server_function():
         fd=open("key_file","rb")
         key=fd.read()
         while True:
-            data=client_sock.recv(1024)
-            if not data:break
-            data=decrypt_data(key,data)
-            print(">"+str(data))
-            data=encrypt_data(key)
-            if not data:break
-            client_sock.send(data)
+            ret=os.fork()
+            if  ret==0:
+                recv_data(client_sock,key)
+            else:    
+                send_data(client_sock,key)
         client_sock.close()
     sock.close() 
 
