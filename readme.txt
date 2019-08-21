@@ -7,7 +7,7 @@ Requirements:
                                 #chmod u+x requirement
                                 #./requirement
 How to run:
-           #python securechat.py --option client/keys/server --port port_no --ip ip_address
+           #python securechatprogram.py --option client/keys/server --port port_no --ip ip_address
            where --option keys will generate new keys and copy to a file in your current directory.
            you need to copy this file to your other device whom you want to chat.    
              
