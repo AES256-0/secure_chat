@@ -93,6 +93,7 @@ def server_function():
 
 
 if __name__=="__main__":
+    print("*****************WELCOME TO SECURE CHAT******************")
     if args.option=="client":
         client_function(args.ip,args.port)
     elif args.option=="keys":
