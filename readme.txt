@@ -14,6 +14,6 @@ How to run:
 future_features:
        *Graphical interface will be added.
 
-for any query , contact me at:  EMAIL: ashishbeckh7@gmail.com
+
 
        
